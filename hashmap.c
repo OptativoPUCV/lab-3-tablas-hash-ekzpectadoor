@@ -51,10 +51,6 @@ void insertMap(HashMap * map, char * key, void * value) {
         Pair *current = map->buckets[pos];
         if (current == NULL) 
         {
-            if (disponible == -1)
-            { 
-                disponible = pos;
-            }
             break;
         }
         else if (current->key == NULL) 
