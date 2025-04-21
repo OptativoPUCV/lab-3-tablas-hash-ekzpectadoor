@@ -78,9 +78,29 @@ void insertMap(HashMap * map, char * key, void * value) {
 
 void enlarge(HashMap * map) {
     enlarge_called = 1; //no borrar (testing purposes)
-
-
+    Pair **bucketsActuales = map->buckets;
+    long capacidadActual = map->capacity;
+    map->capacity *= 2;
+    map->buckets = (Pair **)calloc(map->capacity, sizeof(Pair *));
+    if (map->buckets == NULL)
+    {
+        printf("Error en la asignacion de memoria");
+        return;
+    }
+    map->size = 0;
+    map->current = -1;
+    for (long i = 0; i < capacidadActual; i++) 
+    {
+        Pair *parActual = bucketsActuales[i];
+        if (parActual != NULL && parActual->key != NULL) 
+        {
+            insertMap(map, parActual->key, parActual->value);
+            free(parActual);
+        }
+    }
+    free(bucketsActuales);
 }
+
 
 
 HashMap * createMap(long capacity) {
@@ -103,8 +123,25 @@ HashMap * createMap(long capacity) {
 }
 
 void eraseMap(HashMap * map,  char * key) {    
-
-
+    if (map == NULL || key == NULL) 
+    {
+        return;
+    }    
+    long hashs = hash(key, map->capacity);
+    for (int i = 0; i < map->capacity; i++) {
+        long pos = (hashs + i) % map->capacity;
+        Pair *current = map->buckets[pos];
+        if (current == NULL) 
+        {
+            return;
+        }   
+        if (current->key != NULL && is_equal(current->key, key)) 
+        {
+            current->key = NULL;
+            map->size--;
+            return;
+        }
+    }
 }
 
 Pair * searchMap(HashMap * map,  char * key) {   
