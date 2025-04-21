@@ -41,11 +41,9 @@ int is_equal(void* key1, void* key2){
 
 void insertMap(HashMap * map, char * key, void * value) {
     if (map == NULL || key == NULL) return;
-
     long hashs = hash(key, map->capacity);
     long disponible = -1;
-    int keyEncontrado = 0;
-
+    int yaExiste = 0;
     for (int i = 0; i < map->capacity; i++) {
         long pos = (hashs + i) % map->capacity;
         Pair *current = map->buckets[pos];
@@ -66,17 +64,12 @@ void insertMap(HashMap * map, char * key, void * value) {
         } 
         else if (is_equal(current->key, key)) 
         {
-            keyEncontrado = 1;
+            yaExiste = 1;
             break;
         }
     }
-    if (keyEncontrado) return;
-    if (disponible == -1) return;
-
-    Pair *existing = map->buckets[disponible];
-    if (existing != NULL) {
-        free(existing);
-    }
+    if (yaExiste) return;
+    if (disponible == -1) return;  
     Pair *newPair = createPair(key, value);
     map->buckets[disponible] = newPair;
     map->size++;
