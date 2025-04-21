@@ -40,21 +40,47 @@ int is_equal(void* key1, void* key2){
 
 
 void insertMap(HashMap * map, char * key, void * value) {
-   // long hashs = hash(key, value);
-   // if(map->buckets[hashs]!=NULL || is_equal(map->buckets[hashs]->key,key))
-   // {
-   //     while (map->current < map->capacity)
-   //     {
-   //         hashs += 1;
-   //         map->current += 1;
-   //         if(map->buckets[hashs]==NULL)
-   //         {
-   //             break;
-   //         }   
-   //     }
-   // }
-   // Pair * nuevo_par = createPair(key, value);
-   // map->buckets[hashs]->key = nuevo_par;
+    if (map == NULL || key == NULL) return;
+
+    long hashs = hash(key, map->capacity);
+    long disponible = -1;
+    int keyEncontrado = 0;
+
+    for (int i = 0; i < map->capacity; i++) {
+        long pos = (hashs + i) % map->capacity;
+        Pair *current = map->buckets[pos];
+        if (current == NULL) 
+        {
+            if (disponible == -1)
+            { 
+                disponible = pos;
+            }
+            break;
+        }
+        else if (current->key == NULL) 
+        {
+            if (disponible == -1)
+            { 
+                disponible = pos;
+            }
+        } 
+        else if (is_equal(current->key, key)) 
+        {
+            keyEncontrado = 1;
+            break;
+        }
+    }
+    if (keyEncontrado) return;
+    if (disponible == -1) return;
+
+    Pair *existing = map->buckets[disponible];
+    if (existing != NULL) {
+        free(existing);
+    }
+    Pair *newPair = createPair(key, value);
+    map->buckets[disponible] = newPair;
+    map->size++;
+    map->current = disponible;
 }
 
 void enlarge(HashMap * map) {
